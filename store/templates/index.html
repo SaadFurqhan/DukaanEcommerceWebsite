@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load cart %}
+{% load custom_filter %}
+<!-- body -->
+<style>
+	.product-card {
+		transition: transform 0.5s;
+	}
+
+	.product-card:hover {
+		transform: translateY(-8px)
+	}
+
+	#mobile_responsive {
+		display: none;
+	}
+
+	@media only screen and (max-width: 768px) {
+
+		/* For mobile phones: */
+		#mobile_responsive {
+			display: block;
+			margin-bottom: 20px;
+		}
+
+		#desktop_responsive {
+			display: none
+		}
+	}
+</style>
+<div class="container-fluid mt-3">
+	<div class="row">
+		<!-- filter -->
+
+		<div class="col-lg-3 mx-auto" id="mobile_responsive">
+			<div style="width: 100%;">
+			<form action="/store" method="POST" style="padding-bottom:20px">
+				{% csrf_token %}
+				<input type="text" style="display: inline; width:70%" name="search"  placeholder="search product">
+				<input type="submit" class="btn float-right btn-outline-info" style="width:25%;display: inline;" value="Search">
+			</form>
+		</div>
+			<form action="/store" method="POST" style="padding-bottom:20px">
+				{% csrf_token %}
+				<input type="hidden" name="currentCategory" value="{{currentCategory}}" />
+				<input type="hidden" name="categoryBtn" value="{{categoryNameforDisplay}}" />
+				<select name="filtering" style="width:70%" >
+					<option selected>---Choose Filter---</option>
+					<option value="rating">Sort by ratings</option>
+					<option value="price">Sort by price</option>
+				</select>
+				<input type="submit" class="btn float-right btn-outline-info"  value="Filter" style="width:25%">
+			</form>
+			<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample"
+				aria-expanded="false" aria-controls="collapseExample">
+				Filter by categories
+			</button>
+			<div class="collapse" id="collapseExample">
+				<div class="list-group">
+					<form action="/store" method="POST" style="padding-bottom:20px">
+						{% csrf_token %}
+						<a href="/store" class="list-group-item list-group-item-action">All Products</a>
+						<input type="hidden" name="currentCategory" value="{{currentCategory}}" />
+						{% for category in categories %}
+						<input type="submit" class="list-group-item list-group-item-action" name="categoryBtn"
+							value="{{category.name}}">
+						<!--<a href="/store?category={{category.id}}" 
+						class="list-group-item list-group-item-action">{{category.name}}</a>-->
+						{% endfor %}
+					</form>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="col-lg-3 mx-auto" id="desktop_responsive">
+			<div class="sticky-top" style="top:70px">
+			<form action="/store" method="POST" style="padding-bottom:20px">
+				{% csrf_token %}
+				<input type="text" style="width:220px;display: inline; padding:5px" name="search" id=""
+					placeholder="search product">
+				<input type="submit" class="btn float-right btn-outline-info" style="display: inline;" value="Search">
+			</form>
+			<form action="/store" method="POST" style="padding-bottom:20px">
+				{% csrf_token %}
+				<input type="hidden" name="currentCategory" value="{{currentCategory}}" />
+				<input type="hidden" name="categoryBtn" value="{{categoryNameforDisplay}}" />
+				<select name="filtering" class="form-control" style="width:220px;display:inline; padding:5px">
+					<option selected>---Choose Filter---</option>
+					<option value="rating">Sort by ratings</option>
+					<option value="price">Sort by price</option>
+				</select>
+				<input type="submit" class="btn float-right btn-outline-info" style="display: inline;" value="Filter">
+			</form>
+			<div class="list-group">
+				<form action="/store" method="POST" style="padding-bottom:20px">
+					{% csrf_token %}
+					<a href="/store" class="list-group-item list-group-item-action">All Products</a>
+					<input type="hidden" name="currentCategory" value="{{currentCategory}}" />
+					{% for category in categories %}
+					<input type="submit" class="list-group-item list-group-item-action" name="categoryBtn"
+						value="{{category.name}}">
+					<!--<a href="/store?category={{category.id}}" 
+					class="list-group-item list-group-item-action">{{category.name}}</a>-->
+					{% endfor %}
+				</form>
+			</div>
+		</div>
+		</div>
+
+
+		<!-- all products -->
+		<div id='products'  class="col-lg-9 mx-auto">
+			{% if currentCategory == None or currentCategory == "None" %}
+			<p class="display-8">All Products</p>
+			{% else %}
+			<p class="display-8 pb-8 ">Category / {{categoryNameforDisplay}}</p>
+			{% endif %}
+			{%include 'messages.html'%}
+			<div class="row mx-auto">
+				{% for product in products %}
+				<div class="card mx-auto mb-3 product-card" id={{product.id}} style="width: 15rem;" id="product-card">
+					{% if product.offer %}
+					<div style="position: relative;">
+						<span style="position:absolute; font-size:15px; top:8px; right:16px"
+							class="badge badge-danger">{{product.offerPercentage}} % Off</span>
+						<img class="card-img-top" style="margin-left:50px;width:150px;height:200px"
+							src="{{product.image.url}}" alt="Card image cap">
+					</div>
+					{% endif %}
+					{% if product.offer == False %}
+					<img class="card-img-top" style="margin:auto;width:150px;height:200px" src="{{product.image.url}}"
+						alt="Card image cap">
+					{% endif %}
+					<div class="card-body">
+						<p class="card-title">{{product.name}}</p>
+						<p class="card-text">
+							{%include 'starratings.html'%}
+						</p>
+						<p class="card-text" style="display: inline-block;"><strike>{{product.mrp|currency}}</strike>
+						</p>
+						<p class="card-text" style="display: inline-block; font-size:large">
+							<b>{{product.price|currency}}</b></p>
+					</div>
+
+					<p class="card-text" style="padding:0 1.25rem"><a
+							href="/productdetails?productid={{product.id}}">View description</a>
+
+
+					<div class="card-footer p-0 no-gutters">
+						{% if product|is_in_cart:request.session.cart %}
+						<div class="row no-gutters">
+
+							<form action="/#{{product.id}}" class="col-2" method="post">
+								{% csrf_token %}
+								<input type="hidden" name="currentCategory" value="{{currentCategory}}" />
+								<input type="hidden" name="categoryBtn" value="{{categoryNameforDisplay}}" />
+								<input hidden type="text" name='product' value='{{product.id}}'>
+								<input hidden type="text" name='remove' value='True'>
+								<input type="submit" value=" - " class="btn btn-block btn-light border-right">
+							</form>
+							<div class="text-center col">{{product|cart_quantity:request.session.cart}} in Cart</div>
+							<form action="/#{{product.id}}" class="col-2 " method="post">
+								{% csrf_token %}
+								<input type="hidden" name="currentCategory" value="{{currentCategory}}" />
+								<input type="hidden" name="categoryBtn" value="{{categoryNameforDisplay}}" />
+								<input hidden type="text" name='product' value='{{product.id}}'>
+								<input type="submit" value=" + " class="btn btn-block btn-light border-left">
+							</form>
+						</div>
+						{% else %}
+						<form action="/#{{product.id}}" method="POST" class="btn-block">
+							{% csrf_token %}
+							<input type="hidden" name="currentCategory" value="{{currentCategory}}" />
+							<input type="hidden" name="categoryBtn" value="{{categoryNameforDisplay}}" />
+							<input hidden type="text" name='product' value='{{product.id}}'>
+							<input type="submit" class="float-right btn btn-light  form-control" value="Add To Cart">
+						</form>
+						{% endif %}
+
+					</div>
+
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+{% endblock %}

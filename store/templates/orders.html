@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load cart %}
+{% load custom_filter %}
+<div class="container">
+   <div class="border rounded p-4 m-4">
+        <p class="display-4 pl-4 ml-4">Your Orders</p>
+        <hr>
+        {%include 'messages.html'%}
+        <div class="table-responsive">
+        <table class="table">
+            {% for orderId in orderIds%}
+            <thead style="background-color: #F9DDA4;">
+                <tr>
+                    <th>OrderID</th>
+                    <th>{{orderId}}</th>
+                    {%for order in filteredObjects%}
+                        {%for o in order%}
+                            {%if o.orderId == orderId%}
+                            <th>Address</th>
+                            <th colspan="1">{{o.address}}</th>
+                            <th>Phone</th>
+                            <th>{{o.phone}}</th>
+                            {% endif %}
+                        {%endfor%}
+                    {%endfor%}
+                </tr>
+            </thead>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    {% for order in orders %}
+                    <tr>
+                        {% if order.orderId == orderId %}
+                        <td><img style="height: 80px;" src="{{order.product.image.url}}" alt=""></td>
+                        <td>{{order.product.name}}</td>
+                        <td>{{order.price|currency}}</td>
+                        <td>{{order.quantity}}</td>
+                        <td>{{order.quantity|multiply:order.price|currency}}</td>
+                        {% if order.status %}
+                        <td><small class="badge badge-success">Completed</small></td>
+                        {%else%}
+                        <td><small class="badge badge-warning">Pending</small></td>
+                        {% endif %}
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                    {%for order in filteredObjects%}
+                    {%for o in order%}
+                        {%if o.orderId == orderId%}
+                        <th colspan="">Date</th>
+                        <td>{{o.date}}</td>
+                        <th colspan="1"></th>
+                        <th colspan="1">Grand Total</th>
+                        <td>{{o.grandtotal|currency}}</td>
+                        <th>
+                            {%if o.status == False %}
+                            
+                            {%else%}
+                            <form action="/invoice" method="POST" class="btn-block">
+                                {% csrf_token %}
+                                <input  hidden type="text" name='orderId' value='{{orderId}}'>
+                                <input type="submit" value="Print Bill" class="btn btn-light btn-outline-info"/>
+                            </form>
+                            {%endif%}
+                        </th>
+                        {% endif %}
+                    {%endfor%}
+                {%endfor%}
+                </tbody>
+            {%endfor%}
+        </table>
+    </div>
+   </div>
+</div>
+
+
+
+
+
+{% endblock %}

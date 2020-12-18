@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static%}
+{% block content %}
+{% load cart %}
+{% load custom_filter %}
+
+<div class="container" style="margin-top: 30px;">
+  <div class="row">
+    {% for product in products %}
+    <div class="col-lg-6" style="margin:auto; padding-bottom:30px ">
+      <img src="{{product.image.url}}" alt="" width="300px">
+    </div>
+    <div class="col-lg-6">
+      {%include 'messages.html'%}
+      <p>Category / {{product.category.name}}</p>
+      <h1>{{product.name}}</h1>
+      {% if product.offer %}
+      <span style="font-size:17px;" class="badge badge-danger">{{product.offerPercentage}} % Off</span>
+      {% endif %}
+      <p>
+      <h5 style="display: inline-block;"><strike>{{product.mrp|currency}}</strike></h5>
+      <h4 style="display: inline-block;">{{product.price|currency}}</h4>
+      </p>
+      {%include 'starratings.html'%}
+      <p>
+        {% if product|is_in_cart:request.session.cart %}
+      <div class="row" style="margin-left: 2px;">
+        <form action="/productdetails?{{product.id}}" method="post">
+          {% csrf_token %}
+          <input hidden type="text" name='product' value='{{product.id}}'>
+          <input hidden type="text" name='remove' value='True'>
+          <input type="submit" value=" - " class="btn btn-block btn-outline-info">
+        </form>
+        <div class="text-center border" style="width:100px;">{{product|cart_quantity:request.session.cart}} in cart
+        </div>
+        <form action="/productdetails?{{product.id}}" method="post">
+          {% csrf_token %}
+          <input hidden type="text" name='product' value='{{product.id}}'>
+          <input type="submit" value=" + " class="btn btn-block btn-outline-info ">
+        </form>
+      </div>
+      {% else %}
+      <form action="/productdetails?{{product.id}}" method="POST" class="btn-block">
+        {% csrf_token %}
+        <input hidden type="text" name='product' value='{{product.id}}'>
+        <input type="submit" class=" btn btn-light btn-outline-info" value="Add To Cart">
+      </form>
+      {% endif %}
+      </p>
+      <h4>Product details</h4>
+      <p>{{product.description}}</p>
+      {% if request.session.customer %}
+      <div>
+        <h4>Rate this product</h4>
+        {%if ratedBefore%}
+        <p>You have already rated this product !</p>
+        {%else%}
+        <form action="/productdetails?{{product.id}}" method="POST" class="btn-block">
+        {% csrf_token %}
+        <input hidden type="text" name='product' value='{{product.id}}'>
+        <input type="number" max="5" min="0" step=".5" name="ratings" style="width:70px; margin-right:20px"/>
+        <input type="submit" value="Submit Feedback" class="btn btn-light btn-outline-info"/>
+        </form>
+        {%endif%}
+      </div>
+      {% endif %}
+    </div>
+    {%endfor%}
+  </div>
+</div>
+
+<div class="small-container">
+  <h3 class="title">Related Products</h3>
+  <div class="rows">
+    {% for category in categories%}
+    <div class="col-4">
+      <img style="width:100px" src="{{category.image.url}}" />
+      <h4>{{category.name}}</h4>
+      <p>
+        <h5 style="display: inline-block;"><strike>{{category.mrp|currency}}</strike></h5>
+        <h4 style="display: inline-block;">{{category.price|currency}}</h4>
+        </p>
+      <p><a href="/productdetails?productid={{category.id}}">View Product</a>
+    </div>
+    {%endfor%}
+  </div>
+</div>
+
+
+{%endblock%}

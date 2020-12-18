@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load cart %}
+{% load custom_filter %}
+{%if request.session.customer == 26 %}
+<div class="container">
+    <div class="border rounded p-4 m-4">
+        <p class="display-4 pl-4 ml-4">All Orders</p>
+        <div class="m-2 p-3">
+            <form action="/allorders" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="text" name="search" id="" class="form-control"
+                        placeholder="search box for Date: '2020-10-13'">
+                </div>
+                <div class="form-group" style="display: inline-block;">
+                    <input type="radio" name="option" id="" value="orderID">
+                    <label for="" style="display: inline-block;">Order ID</label>
+                </div>
+                <div class="form-group" style="display: inline-block;">
+                    <input type="radio" name="option" id="" value="date">
+                    <label for="" style="display: inline-block;">Date</label>
+                </div>
+                <input type="submit" class="btn float-right btn-outline-info col-lg-2" value="Search">
+            </form>
+        </div>
+        <hr>
+
+        <div id="accordion">
+            {% for orderId in orderIds %}
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <h5 class="mb-0">
+                        <button style="width:100%" class="btn collapsed" data-toggle="collapse" data-target="#{{forloop.counter}}"
+                            aria-expanded="true" aria-controls="collapseOne">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <td>{{orderId}}</td>
+                                            {%for order in filteredObjects%}
+                                            {%for o in order%}
+                                            {%if o.orderId == orderId%}
+                                            <th>Customer Name</th>
+                                            <td>{{o.customer.first_name|capfirst}} {{o.customer.last_name|capfirst}}
+                                            </td>
+                                            <th>Phone</th>
+                                            <td>{{o.phone}}</td>
+                                            <th>Date</th>
+                                            <td>{{o.date}}</td>
+                                            {% endif %}
+                                            {%endfor%}
+                                            {%endfor%}
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </button>
+                    </h5>
+                </div>
+
+                <div id="{{forloop.counter}}" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Product</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in orders %}
+                                    {% if order.orderId == orderId %}
+                                    <tr>
+
+                                        <td><img style="height: 80px;" src="{{order.product.image.url}}" alt=""></td>
+                                        <td>{{order.product.name}}</td>
+                                        <td>{{order.price|currency}}</td>
+                                        <td>{{order.quantity}}</td>
+                                        <td>{{order.quantity|multiply:order.price|currency}}</td>
+                                        {% if order.status %}
+                                        <td><small class="badge badge-success">Completed</small></td>
+                                        {%else%}
+                                        <td><small class="badge badge-warning">Pending</small></td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+
+                                    {%for order in filteredObjects%}
+                                    {%for o in order%}
+                                    {%if o.orderId == orderId%}
+                                    <th colspan="">Date</th>
+                                    <td>{{o.date}}</td>
+                                    
+                                    <th colspan="2">Grand Total</th>
+                                    <td>{{o.grandtotal|currency}}</td>
+                                    <th>
+                                        <form action="/invoice" method="POST" class="btn-block">
+                                            {% csrf_token %}
+                                            <input hidden type="text" name='orderId' value='{{orderId}}'>
+                                            <input type="submit" value="Print Bill"
+                                                class="btn btn-light btn-outline-info" />
+                                        </form>
+                                    </th>
+                                    {% endif %}
+                                    {%endfor%}
+                                    {%endfor%}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {%endfor%}
+        </div>
+    </div>
+</div>
+{%else%}
+<div class="container">
+    <div class="border rounded p-2 m-2">
+        <p class="display-4 pl-2 ml-2">You are not permitted to visit this site.</p>
+    </div>
+</div>
+
+{%endif%}
+
+
+
+
+{% endblock %}

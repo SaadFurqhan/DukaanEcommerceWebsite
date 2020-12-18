@@ -1,0 +1,102 @@
+{% load cart %}
+{%load static%}
+{% load custom_filter %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="icon" href="{% static 'images/store.png' %}">
+         <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <title>Dukaan</title>
+        <style type="text/css">
+            body {
+                font-family: 'Poppins', sans-serif;
+                font-weight: 200;
+                font-size: 14px;
+            }
+            .header {
+                font-size: 20px;
+                font-weight: 100;
+                text-align: center;
+            }
+            .title {
+                font-size: 22px;
+                font-weight: 100;
+               /* text-align: right;*/
+            }
+            .details {
+                padding: 3px 3px 0px 3px;
+                text-align: left !important;
+                /*margin-left: 40%;*/
+            }
+            .hrItem {
+                border: none;
+                height: 1px;
+                /* Set the hr color */
+                color: #333; /* old IE */
+                background-color: #fff; /* Modern Browsers */
+            }
+            th{
+                text-align: left;
+            }
+        </style>
+    </head>
+    <body>
+        <div class='wrapper'>
+            <div class='header'>
+                Dukaan
+                <span>an online grocery shopping site</span>
+                <br>
+                Invoice Details
+            </div>
+        <div>
+        <div class='details'>
+            Invoice No: {{orderId}}<br/>
+            {%for order in singleOrder%}
+            Bill to: {{order.customer.first_name|capfirst}} {{order.customer.last_name|capfirst}}<br/>
+            Address:  {{order.address}}<br/>
+            Date: {{order.date}}<br/>
+            Phone: {{order.phone}}
+            {% endfor %}
+            <hr class='hrItem' />
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{order.product.name}}</td>
+                        <td>{{order.price}}</td>
+                        <td>{{order.quantity}}</td>
+                        <td>{{order.quantity|multiply:order.price}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <hr>
+            
+            <table>
+                {% for order in singleOrder %}
+                <tr>
+                    
+                    <td colspan="3"></td>
+                    <td style="font-weight: bold;">Grand Total</td>
+                    <td>{{order.grandtotal}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    </body>
+</html>

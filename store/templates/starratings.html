@@ -1,0 +1,68 @@
+{%if product.rating == 0 or product.rating < 0.5%}
+<span class="fa fa-star-o"></span>
+<span class="fa fa-star-o"></span>
+<span class="fa fa-star-o"></span>
+<span class="fa fa-star-o"></span>
+<span class="fa fa-star-o"></span>
+{%elif product.rating == 0.5 or product.rating < 1%}
+<span class="fa fa-star-half-o"></span>
+<span class="fa fa-star-o"></span>
+<span class="fa fa-star-o"></span>
+<span class="fa fa-star-o"></span>
+<span class="fa fa-star-o"></span>
+{%elif product.rating == 1 or product.rating < 1.5%}
+<span class="fa fa-star"></span>
+<span class="fa fa-star-o"></span>
+<span class="fa fa-star-o"></span>
+<span class="fa fa-star-o"></span>
+<span class="fa fa-star-o"></span>
+{%elif product.rating == 1.5 or product.rating < 2%}
+<span class="fa fa-star"></span>
+<span class="fa fa-star-half-o"></span>
+<span class="fa fa-star-o"></span>
+<span class="fa fa-star-o"></span>
+<span class="fa fa-star-o"></span>
+{%elif product.rating == 2 or product.rating < 2.5%}
+<span class="fa fa-star"></span>
+<span class="fa fa-star"></span>
+<span class="fa fa-star-o"></span>
+<span class="fa fa-star-o"></span>
+<span class="fa fa-star-o"></span>
+{%elif product.rating == 2.5 or product.rating < 3%}
+<span class="fa fa-star"></span>
+<span class="fa fa-star"></span>
+<span class="fa fa-star-half-o"></span>
+<span class="fa fa-star-o"></span>
+<span class="fa fa-star-o"></span>
+{%elif product.rating == 3 or product.rating < 3.5%}
+<span class="fa fa-star"></span>
+<span class="fa fa-star"></span>
+<span class="fa fa-star"></span>
+<span class="fa fa-star-o"></span>
+<span class="fa fa-star-o"></span>
+{%elif product.rating == 3.5 or product.rating < 4%}
+<span class="fa fa-star"></span>
+<span class="fa fa-star"></span>
+<span class="fa fa-star"></span>
+<span class="fa fa-star-half-o"></span>
+<span class="fa fa-star-o"></span>
+{%elif product.rating == 4 or product.rating < 4.5%}
+<span class="fa fa-star"></span>
+<span class="fa fa-star"></span>
+<span class="fa fa-star"></span>
+<span class="fa fa-star"></span>
+<span class="fa fa-star-o"></span>
+{%elif product.rating == 4.5 or product.rating < 5%}
+<span class="fa fa-star"></span>
+<span class="fa fa-star"></span>
+<span class="fa fa-star"></span>
+<span class="fa fa-star"></span>
+<span class="fa fa-star-half-o"></span>
+{%else%}
+<span class="fa fa-star"></span>
+<span class="fa fa-star"></span>
+<span class="fa fa-star"></span>
+<span class="fa fa-star"></span>
+<span class="fa fa-star"></span>
+{%endif%}
+<span>{{product.rating}}</span>

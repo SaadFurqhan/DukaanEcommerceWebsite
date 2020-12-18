@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{%load static%}
+{% block content %}
+{% load cart %}
+{% load custom_filter %}
+<style>
+  .cart-page {
+    margin: 30px auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .cart-info {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .cart-page th {
+    text-align: left;
+    padding: 5px;
+    font-weight: normal;
+    border-bottom: 2px solid;
+  }
+
+  td {
+    padding: 10px 5px;
+  }
+
+  td input {
+    width: 40px;
+    height: 30px;
+    padding: 5px;
+  }
+
+  td img {
+    height: 80px;
+    margin-right: 10px;
+  }
+
+  .total-price {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .total-price table {
+    border-top: 1px solid;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  td:last-child {
+    text-align: right;
+  }
+
+  th:last-child {
+    text-align: right;
+  }
+</style>
+<div class="container">
+
+  <div class="border rounded mt-4" id="mobile_responsive">
+    <p class="display-4 pl-4 ml-4">Your Cart</p>
+    {%include 'messages.html'%}
+    <div class="small-container cart-page">
+      <table>
+        <tr>
+          <th>Sno.</th>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>SubTotal</th>
+        </tr>
+
+        {% for product in products %}
+        <tr>
+          <td>{{forloop.counter}}</td>
+          <td>
+            <div class="cart-info">
+              <img src="{{product.image.url}}" alt="">
+              <div>
+                {{product.name}}
+                <br>
+                {{product.price|currency}}
+
+              </div>
+            </div>
+          </td>
+          <td>
+            {% if product|is_in_cart:request.session.cart %}
+            <div class="row">
+              <form action="/cart?{{product.id}}" method="post">
+                {% csrf_token %}
+                <input hidden type="text" name='product' value='{{product.id}}'>
+                <input hidden type="text" name='remove' value='True'>
+                <input type="submit" value="-" style="width:10px;" class="btn btn-block btn-dark ">
+              </form>
+              <div class="text-center border" style="width:30px">{{product|cart_quantity:request.session.cart}}</div>
+              <form action="/cart?{{product.id}}" method="post">
+                {% csrf_token %}
+                <input hidden type="text" name='product' value='{{product.id}}'>
+                <input type="submit" value="+" style="width:10px" class="btn btn-block btn-dark ">
+              </form>
+            </div>
+            {% else %}
+            <form action="/cart?{{product.id}}" method="POST" class="btn-block">
+              {% csrf_token %}
+              <input hidden type="text" name='product' value='{{product.id}}'>
+              <input type="submit" class="float-right btn btn-light  form-control" value="Add To Cart">
+            </form>
+            {% endif %}
+          </td>
+          <td>{{product|price_total:request.session.cart|currency}}</td>
+        </tr>
+        {%endfor%}
+      </table>
+
+      <div class="total-price">
+        <table>
+          <tr>
+            <td>Total</td>
+            <td>{{products|total_cart_price:request.session.cart|currency}}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="m-3 p-3">
+        <a href="#" data-toggle="modal" data-target="#exampleModal"
+          class="btn btn-outline-info border rounded  col-lg-3 float-right">Check out</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="border rounded p-4 m-4" id="desktop_responsive">
+    <p class="display-4 pl-4 ml-4">Your Cart</p>
+    <hr>
+    {%include 'messages.html'%}
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Sno.</th>
+            <th>Image</th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          {% for product in products %}
+          <tr>
+            <td>{{forloop.counter}}</td>
+            <td><img style="height: 80px;" src="{{product.image.url}}" alt=""></td>
+            <td>{{product.name}}</td>
+            <td>{{product.price|currency}}</td>
+            {% if product|is_in_cart:request.session.cart %}
+            <td>
+              <div class="row ">
+                <form action="/cart?{{product.id}}" method="post">
+                  {% csrf_token %}
+                  <input hidden type="text" name='product' value='{{product.id}}'>
+                  <input hidden type="text" name='remove' value='True'>
+                  <input type="submit" value=" - " class="btn btn-block btn-dark border-right">
+                </form>
+                <div class="text-center border" style="width:30px">{{product|cart_quantity:request.session.cart}}</div>
+                <form action="/cart?{{product.id}}" method="post">
+                  {% csrf_token %}
+                  <input hidden type="text" name='product' value='{{product.id}}'>
+                  <input type="submit" value=" + " class="btn btn-block btn-dark border-left">
+                </form>
+              </div>
+              {% else %}
+              <form action="/cart?{{product.id}}" method="POST" class="btn-block">
+                {% csrf_token %}
+                <input hidden type="text" name='product' value='{{product.id}}'>
+                <input type="submit" class="float-right btn btn-light  form-control" value="Add To Cart">
+              </form>
+              {% endif %}
+            </td>
+            <td>{{product|price_total:request.session.cart|currency}}</td>
+          </tr>
+
+          {% endfor %}
+
+        </tbody>
+
+        <tfoot>
+          <tr>
+            <th colspan="4"></th>
+            <th class="" colspan="">Total</th>
+            <th>{{products|total_cart_price:request.session.cart|currency}}</th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <hr>
+    <div class="m-3 p-3">
+      <a href="#" data-toggle="modal" data-target="#exampleModal"
+        class="btn btn-outline-info border rounded  col-lg-3 float-right">Check out</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- modal -->
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+          Check Out Form
+        </h5>
+        <hr>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="m-2 p-3">
+          <form action="/check-out" method="POST">
+            {% csrf_token %}
+            <input type="hidden" value="{{products|total_cart_price:request.session.cart}}" name="GrandTotal" />
+            <div class="form-group">
+              <label for="">Address</label>
+              <input type="text" name="address" id="" class="form-control" placeholder="" aria-describedby="helpId">
+
+            </div>
+            <div class="form-group">
+              <label for="">Phone</label>
+              <input type="text" name="phone" maxlength="10" id="" class="form-control" placeholder=""
+                aria-describedby="helpId">
+            </div>
+
+            <input type="submit" class="btn float-right btn-outline-info col-lg-6" value="Check out">
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,116 @@
+body{
+	font-family: 'Poppins', sans-serif;
+}
+  nav{
+	background-color: white;
+  }
+  .one-edge-shadow {
+			box-shadow: 0 8px 2px -5px rgb(246, 245, 245);
+}
+.display-8{
+font-weight: 200;
+font-size: 30px;
+}
+#mobile_responsive{
+display: none;
+}
+.rows{
+margin-top:70px;
+display:flex;
+align-items: center;
+flex-wrap: wrap;
+justify-content: space-around;
+}
+.col-2s{
+flex-basis: 50%;
+min-width: 300px;
+}
+.col-2s img{
+max-width: 100%;
+padding: 50px 0;
+}
+
+.small-container{
+max-width: 1080px;
+margin:auto;
+padding-left: 25px;
+padding-right: 25px;
+margin-top: 30px;
+}
+.col-4{
+flex-basis: 25%;
+padding:10px;
+min-width: 200px;
+margin-bottom: 50px;
+transition: transform 0.5s;
+}
+.col-4 img{
+width:100%
+}
+h4{
+color: #555;
+font-weight: normal;
+}
+.col-4 p{
+font-size: 14px;
+}
+.col-4:hover{
+transform:translateY(-5px)
+}
+.title{
+text-align: center;
+margin: 0 auto 80px;
+position: relative;
+line-height: 60px;
+color:#555;
+}
+.title::after{
+content: '';
+background: #ff523b;
+width: 80px;
+height:5px;
+border-radius: 5px;
+position: absolute;
+bottom: 0;
+left: 50%;
+transform: translateX(-50%);
+}
+.float{
+position: fixed;
+width: 60px;
+height: 60px;
+bottom: 40px;
+right: 40px;
+color:#fff;
+text-align: center;
+background-color: #EC4849;
+border-radius: 50px;
+box-shadow: 2px 2px 3px #999;
+}
+.float:hover{
+color: #fff
+}
+.my-float{
+margin-top: 15px;
+font-size: 30px;
+}
+.product-card{
+	transition: transform 0.5s;
+  }
+  .product-card:hover{
+	  transform:translateY(-8px)
+  }
+  
+  
+@media only screen and (max-width: 768px) {
+/* For mobile phones: */
+#mobile_responsive{
+display:block;
+margin-bottom: 20px;
+	
+}
+#desktop_responsive{
+	display:none
+}    
+
+}

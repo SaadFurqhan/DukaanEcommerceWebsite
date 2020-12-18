@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load cart %}
+{% load custom_filter %}
+{% block content %}
+<div class="container-fluid" style="margin:0px;padding:20px;background-color:#f0f0f0;height:auto">
+	{%include 'messages.html'%}
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-6 " style="margin: auto;">
+				<img
+					src="{% static 'images/mainLogo.png' %}" />
+			</div>
+			<div class="col-lg-6" style="margin: auto;">
+				<h2 class="heading">Welcome to Dukaan</h2>
+				<p class="lead">a brand new online grocery shopping site, book all your daily needs groceries and get
+					deliverd by today! </p>
+				{% if request.session.customer %}
+				<p><a class="btn btn-primary" href="/store" role="button">Go to store!</a></p>
+				{% else %}
+				<p><a class="btn btn-primary" href="/signup" role="button">Sign up today</a></p>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container-fluid" style="padding-top:45px;padding-bottom:35px">
+	<h1 class="heading" style="text-align: center;">Our Services</h1>
+	<div class="container">
+		<div class="row" style="text-align: center;">
+			<div class="col-lg-4">
+				<img height="250px"
+					src="{% static 'images/service1.jpg' %}" />
+				<h2 class="heading">Store</h2>
+				<p class="lead">Brand new online grocery store cotains all the product with perfect categorization,
+					search your product and even look upon the deal of the day! Book Now! </p>
+			</div><!-- /.col-lg-4 -->
+			<div class="col-lg-4">
+				<img height="250px"
+					src="{% static 'images/service2.jpg' %}" />
+				<h2 class="heading">Place order</h2>
+				<p class="lead">Place your order through cart section by providing phone and address, make sure you add
+					all the products and didn't missed any.</p>
+			</div><!-- /.col-lg-4 -->
+			<div class="col-lg-4">
+				<img height="250px"
+					src="{% static 'images/service3.jpg' %}" />
+				<h2 class="heading">Delivery</h2>
+				<p class="lead">We take atmost care and concern for delivering products within time, It will be as soon
+					as possible, based upon the location.</p>
+			</div><!-- /.col-lg-4 -->
+		</div><!-- /.row -->
+	</div>
+</div>
+
+<hr style="margin: 2rem 0;" />
+
+<div class="container-fluid" style="text-align: center;">
+	<img style="margin: auto;" width="440px" src="{% static 'images/deal.gif' %}" />
+</div>
+
+<div class="container-fluid mt-3">
+	<!-- all products -->
+
+	<div class="row mx-auto">
+		{% for product in products %}
+		{% if product.offer %}
+		<div class="card mx-auto mb-3" id={{product.id}} style="width: 15rem;">
+			<div style="position: relative;">
+				<span style="position:absolute; font-size:15px; top:8px; right:16px"
+					class="badge badge-danger">{{product.offerPercentage}} % Off</span>
+				<img class="card-img-top" style="margin-left:50px;width:150px;height:200px" src="{{product.image.url}}"
+					alt="Card image cap">
+			</div>
+			<div class="card-body">
+				<p class="card-title">{{product.name}}</p>
+				<p class="card-text">
+					{%include 'starratings.html'%}
+				</p>
+				<p class="card-text" style="display: inline-block;"><strike>{{product.mrp|currency}}</strike></p>
+				<p class="card-text" style="display: inline-block; font-size:large"><b>{{product.price|currency}}</b>
+				</p>
+			</div>
+			<p class="card-text" style="padding:0 1.25rem"><a href="/productdetails?productid={{product.id}}">View
+					description</a>
+			<div class="card-footer p-0 no-gutters">
+
+				{% if product|is_in_cart:request.session.cart %}
+				<div class="row no-gutters">
+					<form action="/#{{product.id}}" class="col-2 " method="post">
+						{% csrf_token %}
+						<input hidden type="text" name='product' value='{{product.id}}'>
+						<input hidden type="text" name='remove' value='True'>
+						<input type="submit" value=" - " class="btn btn-block btn-light border-right">
+					</form>
+					<div class="text-center col">{{product|cart_quantity:request.session.cart}} in Cart</div>
+					<form action="/#{{product.id}}" class="col-2 " method="post">
+						{% csrf_token %}
+						<input hidden type="text" name='product' value='{{product.id}}'>
+						<input type="submit" value=" + " class="btn btn-block btn-light border-left">
+					</form>
+				</div>
+				{% else %}
+				<form action="/#{{product.id}}" method="POST" class="btn-block">
+					{% csrf_token %}
+					<input hidden type="text" name='product' value='{{product.id}}'>
+					<input type="submit" class="float-right btn btn-light  form-control" value="Add To Cart">
+				</form>
+				{% endif %}
+			</div>
+		</div>
+		{% endif %}
+		{% endfor %}
+	</div>
+</div>
+</div>
+
+{% endblock %}
